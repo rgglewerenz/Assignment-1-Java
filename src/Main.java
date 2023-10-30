@@ -6,24 +6,118 @@ import java.util.*;
 
 public class Main {
     private static final double SALES_TAX = 1.06;
+    private static final String ADMIN_PASSWORD = "MCS3603";
 
-    public static Product[] products;
+    public static ArrayList<Product> products;
 
     static {
         try {
-            products = new Product[]{
-                    new Product(10, "pencil", "a", "normal pencil"),
-                    new Product(3, "sharpener", "b", "normal sharpener"),
-                    new Product(5, "eraser", "c", "normal eraser"),
-                    new Product(20, "pencil case", "d", "normal pencil case"),
-            };
+            products = new ArrayList<>();
+            products.add(new Product(10, "pencil", "a", "normal pencil"));
+            products.add(new Product(3, "sharpener", "b", "normal sharpener"));
+            products.add(new Product(5, "eraser", "c", "normal eraser"));
+            products.add(new Product(20, "pencil case", "d", "normal pencil case"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static Product createProduct() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        String productName;
+        {
+            System.out.println("Enter the name of the new product: ");
+            productName = scanner.nextLine();
+        }
+
+        String productCode;
+        while (true)
+        {
+            System.out.println("Enter the code of the new product: ");
+            productCode = scanner.nextLine();
+            boolean contains = false;
+            for (var product :products) {
+                if(product.code.equals(productCode)){
+                    System.out.println("Error: " + product.name + " already has a product code of " + product.code);
+                    contains = true;
+                    break;
+                }
+            }
+            if(contains)
+                continue;
+            break;
+        }
+        double productPrice;
+        {
+
+            System.out.println("Enter the price of the new product: ");
+            productPrice = getDoubleFromScanner(scanner, 0);
+        }
+        String productDescription;
+        {
+            System.out.println("Enter the description of the new product: ");
+            productDescription = scanner.nextLine();
+        }
+        return new Product(productPrice, productName, productCode, productDescription);
+    }
+
+    private static void adminProductInsertion() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        while(true){
+            clearScreen();
+            printProducts();
+            //Checks if admin wants to add a new product
+            {
+                boolean shouldContinue = false;
+                while (true){
+                    System.out.print("Do you want to add other products (y/n): ");
+                    var input = scanner.nextLine();
+                    if(input.isEmpty())
+                    {
+                        System.out.println("Invalid input");
+                        continue;
+                    }
+                    if(input.charAt(0) == 'y'){
+                        shouldContinue = true;
+                        break;
+                    }
+                    else if (input.charAt(0) == 'n')
+                    {
+                        break;
+                    }
+                    System.out.println("Invalid input");
+                }
+                if(!shouldContinue)
+                    break;
+            }
+            products.add(createProduct());
+        }
+    }
+
+    private static Cart createCart(){
+        Scanner scanner = new Scanner(System.in);
+        String firstName;
+        {
+            System.out.println("Please enter your first name: ");
+            firstName = scanner.next();
+            scanner.nextLine();
+        }
+        String lastName;
+        {
+            System.out.println("Please enter your last name: ");
+            lastName = scanner.next();
+            scanner.nextLine();
+        }
+        return new Cart(firstName + " " + lastName);
+    }
+
     public static void main(String[] args) throws Exception {
-        var cart = new Cart("Ross");
+        if(args.length >= 1 && args[0].equals(ADMIN_PASSWORD)){
+            adminProductInsertion();
+        }
+
+        var cart = createCart();
 
         productSelection(cart);
 
@@ -82,8 +176,6 @@ public class Main {
             {
                 boolean shouldContinue = false;
                 while (true){
-                    if(scanner.hasNextLine())
-                        scanner.nextLine();
                     System.out.print("Do you want to add other products (y/n): ");
                     var input = scanner.nextLine();
                     if(input.isEmpty())
@@ -116,6 +208,7 @@ public class Main {
                 System.out.println("Invalid input, must be above " + min);
                 continue;
             }
+            in.nextLine();
             return val;
         }
     }
@@ -134,6 +227,18 @@ public class Main {
         throw new Exception("Unable to find product with specified code");
     }
 
+    private static double getDoubleFromScanner(Scanner in, double min){
+        while (true){
+            var val = in.nextDouble();
+            if(val < min){
+                in.nextLine();
+                System.out.println("Invalid input, must be above " + min);
+                continue;
+            }
+            in.nextLine();
+            return val;
+        }
+    }
 
     /**
      * Prints all items in the product catalog
@@ -282,7 +387,7 @@ class Cart {
 
         if(paidInFull)
             total *= 0.95;
-        
+
         return total;
     }
 }
