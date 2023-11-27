@@ -9,8 +9,9 @@ public class Main {
         if(args.length > 1 && args[1].equals("console")){
             Console.main(args);
         }
-
-
+        else{
+            GUI.main(args);
+        }
     }
 
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import DataObjects.*;
+import utils.FileWriter;
+
 import java.text.SimpleDateFormat;
 
 public class Console {
@@ -85,6 +87,7 @@ public class Console {
             }
             products.add(createProduct());
         }
+        FileWriter.writeProductsToFile(products, "data/products.items");
     }
 
     private static Cart createCart(){

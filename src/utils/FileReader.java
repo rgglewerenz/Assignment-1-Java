@@ -10,7 +10,7 @@ import DataObjects.*;
 
 public class FileReader {
     public static ArrayList<Product> readProductsFromFile(String filename) throws Exception {
-        Scanner scanner = getFileScanner(filename);
+        Scanner scanner = FileHelper.getFileScanner(filename);
         var products = new ArrayList<Product>();
 
         int i = 1;
@@ -26,8 +26,8 @@ public class FileReader {
                 throw new Exception("Unable to read product on line " + i + "\nReason: Invalid price in 1st row.");
             }
 
-            var name = items[1];
-            var code = items[2];
+            var name = items[1].trim();
+            var code = items[2].trim();
 
             if(!ArrayHelper.Find(products, x -> { return x.code.equals(code); }).isEmpty()){
                 throw new Exception("Unable to read product on line " + i +
@@ -36,7 +36,7 @@ public class FileReader {
                                     ArrayHelper.Find(products, x -> {return x.code.equals(code); }).get(0).name);
             }
 
-            var description = items[3];
+            var description = items[3].trim();
 
             // if valid add product to products
             products.add(new Product(price, name, code, description));
@@ -49,7 +49,7 @@ public class FileReader {
     }
 
     public static ArrayList<Customer> readCustomersFromFile(String filename) throws Exception {
-        Scanner scanner = getFileScanner(filename);
+        Scanner scanner = FileHelper.getFileScanner(filename);
         var customers = new ArrayList<Customer>();
 
         int i = 1;
@@ -80,7 +80,7 @@ public class FileReader {
             // validate date: if it fails it sets the date to today
             {
                 try{
-                    date = new Date(Date.parse(items[3]));
+                    date = new Date(Date.parse(items[3].trim()));
                 }catch (IllegalArgumentException e){
                     date = new Date();
                 }
@@ -96,7 +96,7 @@ public class FileReader {
                 }
             }
 
-            customers.add(new Customer(customerID, items[1], items[2], date, priceOfLastTransaction));
+            customers.add(new Customer(customerID, items[1].trim(), items[2].trim(), date, priceOfLastTransaction));
             i++;
         }
 
@@ -105,23 +105,6 @@ public class FileReader {
 
     public static Cart readInvoiceFromFile(String filename, ArrayList<Product> products) {
         return new Cart(new Customer(0, "", "", new Date(), 0));
-    }
-
-
-    private static Scanner getFileScanner(String filename) throws Exception {
-        File file;
-        //Generates entire path if needed
-        {
-            var path = Paths.get(filename).toAbsolutePath();
-            file = path.toFile();
-        }
-        //Check if file exists
-        {
-            if(!file.exists()){
-                throw new Exception("unable to find file");
-            }
-            return new Scanner(file);
-        }
     }
 
 }
