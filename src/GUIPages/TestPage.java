@@ -1,10 +1,10 @@
-package GUI_Pages;
+package GUIPages;
 
 import javax.swing.*;
 
 public class TestPage extends MyPanelBase {
-    public TestPage(JPanel mainPanel) {
-        super(mainPanel);
+    public TestPage(JPanel mainPanel, JFrame mainFrame) throws Exception {
+        super(mainPanel, mainFrame);
     }
 
     @Override

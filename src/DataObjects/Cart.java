@@ -6,12 +6,16 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class Cart {
-    private final ArrayList<Product> cartProducts;
-    private final Customer customer;
+    public final ArrayList<Product> cartProducts;
+    public final Customer customer;
 
     public Cart(Customer customer) {
         cartProducts = new ArrayList<>();
         this.customer = customer;
+    }
+
+    public Customer getCustomer(){
+        return customer;
     }
 
 
