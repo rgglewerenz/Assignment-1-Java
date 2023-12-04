@@ -103,8 +103,39 @@ public class FileReader {
         return customers;
     }
 
-    public static Cart readInvoiceFromFile(String filename, ArrayList<Product> products) {
-        return new Cart(new Customer(0, "", "", new Date(), 0));
+    public static Cart readInvoiceFromFile(String filename, ArrayList<Product> products, ArrayList<Customer> customers) throws Exception {
+        Scanner scanner = FileHelper.getFileScanner(filename);
+
+        Customer customer = customers.get(0);
+        //Get Customer
+        {
+            var line = scanner.nextLine();
+            System.out.println("line = " + line);
+            int customerID = Integer.parseInt(line);
+            customer = ArrayHelper.Find(customers, x -> x.customerID == customerID).get(0);
+        }
+
+        Cart cart = new Cart(customer);
+
+        //put products into cart
+        int i = 2;
+        while (scanner.hasNext()){
+            var line = scanner.nextLine();
+            var items = line.split(",");
+            var code = items[0].trim();
+            var count = Integer.parseInt(items[1]);
+
+            var item = ArrayHelper.Find(products, x -> x.code.equals(code));
+            if(item.size() != 1){
+                throw new Exception("Unable to find product with code:" + code +"\nThis is on line: " + i);
+            }
+            cart.addProduct(item.get(0), count);
+
+            i++;
+        }
+
+
+        return cart;
     }
 
 }

@@ -29,6 +29,17 @@ public class FileWriter {
 
     public static void writeTransactionToFile(Cart cart, String filename) throws Exception {
         var writer = FileHelper.getFileWriter(filename);
-        throw new Exception("not implemented");
+
+        writer.append(cart.customer.customerID + "\n");
+
+        var productCounts = cart.getProductCounts();
+
+        var keys = productCounts.keys();
+        while(keys.hasMoreElements()){
+            var product = keys.nextElement();
+            writer.append(product.code + "," + productCounts.get(product) + "\n");
+        }
+
+        writer.close();
     }
 }

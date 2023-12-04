@@ -2,24 +2,24 @@ package GUIPages;
 
 import utils.ArrayHelper;
 import utils.CartHandler;
+import utils.FileHelper;
 import utils.FileReader;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.DefaultMenuLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class LoginPage extends MyPanelBase {
     private final CartHandler handler;
     public LoginPage(JPanel mainPanel, CartHandler handler, JFrame mainFrame) throws Exception {
-        super(mainPanel, mainFrame);
+        super(mainPanel, mainFrame, LoginPage.class);
         this.handler = handler;
     }
 
     @Override
     protected void addItems() throws Exception {
-        var customers = FileReader.readCustomersFromFile("data/customers.items");
+        var customers = FileReader.readCustomersFromFile(FileHelper.CUSTOMERS_PATH);
 
         var innerFrame = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
@@ -62,7 +62,11 @@ public class LoginPage extends MyPanelBase {
                     return;
                 }
                 handler.setCustomer(ArrayHelper.Find(customers, x -> { return x.customerID == finalCustomerID; }).get(0));
-                showPanel(ShopPage.class);
+                try {
+                    showPanel(ShopPage.class);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 

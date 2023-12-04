@@ -9,7 +9,8 @@ public abstract class MyPanelBase extends JPanel {
 
     protected JFrame mainFrame;
 
-    public MyPanelBase(JPanel mainPanel, JFrame mainFrame) throws Exception {
+
+    public MyPanelBase(JPanel mainPanel, JFrame mainFrame, Class<? extends MyPanelBase> type) throws Exception {
         this.mainPanel = mainPanel;
         this.mainFrame = mainFrame;
         addItems();
@@ -17,7 +18,7 @@ public abstract class MyPanelBase extends JPanel {
 
     protected abstract void addItems() throws Exception;
 
-    protected void showPanel(Class<? extends MyPanelBase> type){
+    protected void showPanel(Class<? extends MyPanelBase> type) throws Exception {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, type.getName());
     }

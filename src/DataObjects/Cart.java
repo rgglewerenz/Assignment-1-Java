@@ -33,6 +33,18 @@ public class Cart {
         }
     }
 
+    public void removeProduct(Product val, int amt) throws Exception {
+        if (amt < 0)
+            throw new Exception("amt can not be negative");
+
+
+        for (int i = 0; i < amt; i++) {
+            var index = cartProducts.indexOf(val);
+            if(index == -1)
+                return;
+            cartProducts.remove(val);
+        }
+    }
 
     /**
      * Prints all items in the cart, along with the customer's name
@@ -79,7 +91,7 @@ public class Cart {
     /**
      * @return returns a dictionary with the products as keys and the count as the value
      */
-    private Dictionary<Product, Integer> getProductCounts() {
+    public Dictionary<Product, Integer> getProductCounts() {
         Dictionary<Product, Integer> productCount = new Hashtable<>();
         for (var product : cartProducts) {
             if (productCount.get(product) != null) {
@@ -98,7 +110,7 @@ public class Cart {
      * @param productCount dictionary with products and their count
      * @return total of only specific products
      */
-    private double calcProductTotal(Product product, Dictionary<Product, Integer> productCount) {
+    public double calcProductTotal(Product product, Dictionary<Product, Integer> productCount) {
         if (productCount.get(product) >= 10) {
             return (product.price * (double) (productCount.get(product) - 1)) + (product.price *= 0.9);
         }

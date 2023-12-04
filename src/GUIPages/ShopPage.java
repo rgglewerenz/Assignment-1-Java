@@ -2,12 +2,10 @@ package GUIPages;
 
 import DataObjects.Product;
 import utils.CartHandler;
+import utils.FileHelper;
 import utils.FileReader;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ public class ShopPage extends MyPanelBase {
     private final CartHandler handler;
 
     public ShopPage(JPanel mainPanel, CartHandler handler, JFrame mainFrame) throws Exception {
-        super(mainPanel, mainFrame);
+        super(mainPanel, mainFrame, ShopPage.class);
         this.handler = handler;
     }
 
@@ -36,31 +34,55 @@ public class ShopPage extends MyPanelBase {
             row.add(new JLabel("Price"));
             row.add(new JLabel("Description"));
             row.add(new JPanel());
-            row.setPreferredSize(new Dimension(100, 100));
             gridContainer.add(row);
         }
         for(var product : products){
             var row = new JPanel();
             row.setLayout(new GridLayout(1, 4));
+
             row.add(new JLabel(product.name));
             row.add(new JLabel(String.format("$%.2f", product.price)));
             row.add(new JLabel(product.description));
-            var button = new JButton("Add to cart");
 
-            button.addActionListener(new AbstractAction() {
+            var container = new JPanel(new GridLayout(1, 3));
+
+            var label = new JLabel("0");
+            var buttonPlus = new JButton("+");
+            var buttonMinus = new JButton("-");
+
+            buttonMinus.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        handler.getCart().addProduct(product, 1);
-                        handler.getCart().printCart(0.1, true);
+                        handler.getCart().removeProduct(product, 1);
+                        var productCount = handler.getCart().getProductCounts().get(product);
+                        label.setText(productCount == null ? "0" : productCount.toString());
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
                 }
             });
 
-            row.add(button);
-            row.setPreferredSize(new Dimension(100, 100));
+            buttonPlus.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        handler.getCart().addProduct(product, 1);
+                        var productCount = handler.getCart().getProductCounts().get(product);
+                        label.setText(productCount == null ? "0" : productCount.toString());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+
+
+            container.add(buttonMinus);
+            container.add(label);
+            container.add(buttonPlus);
+
+            row.add(container);
+
             gridContainer.add(row);
         }
 
@@ -68,42 +90,37 @@ public class ShopPage extends MyPanelBase {
         JScrollPane scrollPane = new JScrollPane(gridContainer);
         scrollPane.setPreferredSize(new Dimension(500, 400));
 
+        JPanel checkoutButtonContainer = new JPanel();
+
+        checkoutButtonContainer.setPreferredSize(new Dimension(500, 100));
+
+        var checkoutButton = new JButton("Checkout");
+        checkoutButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    showPanel(CheckoutPage.class);
+                    handler.finalizeCart();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        checkoutButtonContainer.add(checkoutButton);
+
+        add(checkoutButtonContainer);
         add(scrollPane);
     }
 
     @Override
     protected void addItems() throws Exception {
-        products = FileReader.readProductsFromFile("data/products.items");
+        products = FileReader.readProductsFromFile(FileHelper.PRODUCTS_PATH);
         addProducts();
     }
 
 }
 
 
-class MyDialog extends JDialog {
-    MyDialog(Frame parentFrame, boolean isModal){
-        super(parentFrame, "My Dialog", isModal);
 
-
-        JLabel label = new JLabel("This is a custom modal dialog");
-        JButton closeButton = new JButton("Close Dialog");
-
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close the dialog
-            }
-        });
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(label, BorderLayout.CENTER);
-        panel.add(closeButton, BorderLayout.SOUTH);
-
-        getContentPane().add(panel);
-        setSize(200, 150);
-        setLocationRelativeTo(parentFrame);
-        setVisible(true);
-
-    }
-}
 
